@@ -62,66 +62,31 @@
 
 <script>
 
+class Player{
+  constructor() {
+    this.name = '',
+    this.red = null,
+    this.gold = null,
+    this.wonder = null,
+    this.blue = null,
+    this.orange = null,
+    this.violet = null,
+    this.green = null,
+    this.leader = null,
+    this.sum = null
+  }
+}
+
 export default {
   name: 'App',
   data: function () {
     return {
-      playersArr: [
-        {
-          name: '',
-          red: null,
-          gold: null,
-          wonder: null,
-          blue: null,
-          orange: null,
-          violet: null,
-          green: null,
-          leader: null,
-          sum: null
-        },
-        {
-          name: '',
-          red: null,
-          gold: null,
-          wonder: null,
-          blue: null,
-          orange: null,
-          violet: null,
-          green: null,
-          leader: null,
-          sum: null
-        },
-        {
-          name: '',
-          red: null,
-          gold: null,
-          wonder: null,
-          blue: null,
-          orange: null,
-          violet: null,
-          green: null,
-          leader: null,
-          sum: null
-        }
-      ]
+      playersArr: new Array(3).fill('huj').map(() => new Player())
     }
   },
   methods: {
     addPlayer: function () {
-      this.playersArr.push(
-        {
-          name: '',
-          red: null,
-          gold: null,
-          wonder: null,
-          blue: null,
-          orange: null,
-          violet: null,
-          green: null,
-          leader: null,
-          sum: null
-        }
-      );
+      this.playersArr.push(new Player());
     },
     submitForm: function () {
       console.log(this.playersArr);
