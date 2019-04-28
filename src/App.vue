@@ -43,14 +43,14 @@
           </td>
         </tr>
       </table>
-      <button @click.prevent="submitForm">Submit scores</button>
+      <!-- <button @click.prevent="submitForm">Submit scores</button> -->
     </form>
     <button id="addPlayerBtn"  @click="addPlayer">add player</button>
     <button @click="getSum">calculate scores</button>
 
-    <div class="result__wrap" v-if="playersArr[0].sum">
+    <div class="result__wrap" v-if="sortedArr">
       <ul class="result__list">
-        <li clas="result__list-item" v-for="player in playersArr">
+        <li class="result__list-item" v-for="player in sortedArr">
           {{ player.name | capitalize }} - {{ player.sum }} !
         </li>
       </ul>
@@ -64,6 +64,7 @@
 
 class Player{
   constructor() {
+    this.id = null,
     this.name = '',
     this.red = null,
     this.gold = null,
@@ -81,7 +82,8 @@ export default {
   name: 'App',
   data: function () {
     return {
-      playersArr: new Array(3).fill('huj').map(() => new Player())
+      playersArr: new Array(3).fill('huj').map(() => new Player()),
+      sortedArr: null,
     }
   },
   methods: {
@@ -89,13 +91,22 @@ export default {
       this.playersArr.push(new Player());
     },
     submitForm: function () {
+        for (var i = 0; i < this.playersArr.length; i++) {
+          this.playersArr[i].id = i+1;
+        }
       console.log(this.playersArr);
+      return this.playersArr;
     },
     getSum: function () {
       for (var i = 0; i < this.playersArr.length; i++) {
         this.playersArr[i].sum =
         +this.playersArr[i].red + +this.playersArr[i].gold + +this.playersArr[i].wonder + +this.playersArr[i].blue + +this.playersArr[i].orange + +this.playersArr[i].violet + +this.playersArr[i].green + +this.playersArr[i].leader;
       }
+      this.sortedArr = this.playersArr.map(item => ({...item}));
+      this.sortedArr.sort((a, b) => {
+        return b.sum - a.sum;
+      })
+      console.log(this.sortedArr)
     },
   },
   watch: {
@@ -156,6 +167,12 @@ export default {
 
   .result__list {
     list-style: none;
+  }
+
+  li:first-of-type {
+    color: red;
+    font-weight: bold;
+    font-size: 33px;
   }
 
   input {
