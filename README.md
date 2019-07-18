@@ -1,6 +1,6 @@
 # 7wonders
 
-> A Vue.js project
+> Assistant app for the [7 Wonders](https://boardgamegeek.com/boardgame/68448/7-wonders) boardgame developed with Vue.js
 
 ## Build Setup
 
