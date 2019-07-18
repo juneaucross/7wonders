@@ -2,9 +2,11 @@
   <div id="app">
     <div class="container">
 
-      <div class="logo">
-        <h1 class="logo-heading"><span class="logo-number">7</span>wonders</h1>
-      </div>
+      <transition name="slide-fade" appear>
+        <div class="logo">
+          <h1 class="logo-heading"><span class="logo-number">7</span>wonders</h1>
+        </div>
+      </transition>
       <form class="main" action="" method="post">
         <table class="table">
           <th class="table__head-row">
@@ -21,7 +23,7 @@
           <transition-group name="list" appear>
             <tr class="table__player-row" v-for="(player, i) in playersArr" :key="i">
               <td class="table__player table__player--name">
-                <input type="text" :name="'playerName-' + (i+1)" v-model="player.name" value="" tabindex="1" placeholder=" ">
+                <input type="text" :name="'playerName-' + (i+1)" v-model="player.name" ref="focus" value="" tabindex="1" placeholder=" ">
               </td>
               <td class="table__player table__player--red">
                 <input type="number" :name="'red-' + (i+1)" value="" v-model="player.red" tabindex="2" placeholder=" ">
@@ -54,20 +56,29 @@
         <!-- <button @click.prevent="submitForm">Submit scores</button> -->
       </form>
       <div class="buttons-wrap">
-        <button id="addPlayerBtn"  @click="addPlayer">add</button>
-        <button id="getSumBtn" @click="getSum">scores</button>
+        <button class="button button--add" ref="addPlayerBtn"  @click="addPlayer">add player</button>
+        <button class="button button--score"  @click="getSum">scores</button>
       </div>
 
-      <div class="result__wrap" v-if="sortedArr">
-        <ul class="result__list">
-          <li class="result__list-item" v-for="player in sortedArr">
+    </div>
+
+    <dialog class="dialog" ref="dialogEl">
+      <div class="dialog__header">
+        <h2 class="dialog__heading">game over</h2>
+      </div>
+      <div class="dialog__results">
+        <ul class="dialog__results-list">
+          <li class="dialog__results-list-item" v-for="player in sortedArr">
             {{ player.name | capitalize }} - {{ player.sum }} !
           </li>
         </ul>
+        <button class="button button--close" @click="closeDialog">close</button>
+
+
       </div>
 
 
-    </div>
+    </dialog>
 
 
   </div>
@@ -103,13 +114,13 @@ export default {
     addPlayer: function () {
       this.playersArr.push(new Player());
     },
-    submitForm: function () {
-        for (var i = 0; i < this.playersArr.length; i++) {
-          this.playersArr[i].id = i+1;
-        }
-      console.log(this.playersArr);
-      return this.playersArr;
-    },
+    // submitForm: function () {
+    //     for (var i = 0; i < this.playersArr.length; i++) {
+    //       this.playersArr[i].id = i+1;
+    //     }
+    //   console.log(this.playersArr);
+    //   return this.playersArr;
+    // },
     getSum: function () {
       for (var i = 0; i < this.playersArr.length; i++) {
         this.playersArr[i].sum =
@@ -119,13 +130,17 @@ export default {
       this.sortedArr.sort((a, b) => {
         return b.sum - a.sum;
       })
-      console.log(this.sortedArr)
+      console.log(this.sortedArr);
+      this.$refs.dialogEl.setAttribute('open', '');
+    },
+    closeDialog: function () {
+      this.$refs.dialogEl.removeAttribute('open');
     },
   },
   watch: {
     playersArr: function () {
       if (this.playersArr.length >= 8) {
-        document.getElementById('addPlayerBtn').disabled = true;
+        this.$refs.addPlayerBtn.disabled = true;
       };
     }
   },
@@ -135,11 +150,46 @@ export default {
       value = value.toString();
       return value.charAt(0).toUpperCase() + value.slice(1);
     }
-  }
+  },
+  // mounted: function () {
+  //  this.$refs.focus[0].setAttribute('autofocus', '');
+  // }
 }
 </script>
 
 <style>
+
+@font-face {
+  font-family: 'Formular';
+  src: url('./assets/fonts/Formular-Regular.otf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Formular';
+  src: url('./assets/fonts/Formular-Medium.otf');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Reforma2018';
+  src: url('./assets/fonts/Reforma2018-Gris.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Reforma2018';
+  src: url('./assets/fonts/Reforma2018-Negra.ttf');
+  font-weight: 700;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
   #app {
     /* css variables */
@@ -147,10 +197,10 @@ export default {
     --inputFocusColor: #232834;
     --inputPlaceholderColor: #030814;
 
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    font-family: 'Formular', 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-weight: 300;
+    font-weight: 400;
     text-align: center;
     color: white;
     width: 100%;
@@ -164,24 +214,28 @@ export default {
     flex-wrap: wrap;
     width: 1280px;
     margin: 0 auto;
+    padding-top: 30px;
   }
 
   .logo-heading {
+    font-family: 'Reforma2018';
     width: 100%;
     position: relative;
     text-transform: uppercase;
     font-size: 25px;
     line-height: 1.4;
+    font-weight: 400;
   }
 
   .logo-number {
+    font-family: 'Reforma2018';
     display: block;
     position: absolute;
-    top: -10px;
+    top: -18px;
     left: -20px;
     font-size: 38px;
     line-height: 1.4;
-    font-weight: 500;
+    font-weight: 700;
   }
 
   .table {
@@ -229,14 +283,68 @@ export default {
     width: 160px;
   }
 
-  .result__list {
+  .dialog {
+    position: fixed;
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /* text-align: center; */
+    /* color: #fff; */
+    /* background-color: var(--inputPlaceholderColor); */
+  }
+
+  .dialog__header {
+    height: 120px;
+    background-color: var(--inputPlaceholderColor);
+    /* background-color: #4C5772; */
+  }
+
+  .dialog__heading {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #fff;
+    font-size: 30px;
+    line-height: 120px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .dialog__heading::before,
+  .dialog__heading::after {
+    content: '';
+    width: 46px;
+    height: 53px;
+    background-image: url('./assets/icons/cup.png');
+    background-repeat: no-repeat;
+  }
+
+  .dialog__results {
+    display: flex;
+    flex-direction: column;
+    -ms-align-items: center;
+    align-items: center;
+    padding: 30px 0;
+    /* background-color: #4C5772; */
+    background-color: var(--bgColor);
+    text-align: center;
+  }
+
+  .dialog__results-list {
+    margin-bottom: 30px;
     list-style: none;
+    color: #fff;
+    font-size: 20px;
   }
 
   li:first-of-type {
     color: red;
-    font-weight: bold;
-    font-size: 33px;
+    font-weight: 600;
+    font-size: 40px;
+    margin: 10px 0;
   }
 
   input {
@@ -247,10 +355,27 @@ export default {
     line-height: 1.2;
     background-color: var(--bgColor);
     border: none;
+    transition: 0.2s all linear;
   }
 
   input:placeholder-shown {
     background-color: var(--inputPlaceholderColor);
+  }
+
+  /* .table__player-row:nth-child(odd) > input {
+    background-color: rgba(255, 255, 255, 0.1);
+  } */
+
+  .table__player-row:nth-child(odd) input:placeholder-shown {
+    background-color: var(--inputPlaceholderColor);
+  }
+
+  .table__player-row:nth-child(odd) input:focus {
+    background-color: var(--inputFocusColor);
+  }
+
+  .table__player-row:nth-child(odd) input {
+    background-color: transparent;
   }
 
   input:focus {
@@ -266,21 +391,14 @@ export default {
     display: none;
   }
 
-  .table__player-row:nth-child(odd) > input {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
   .buttons-wrap {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin: 45px 0;
     width: 100%;
   }
 
-  button {
-    width: 140px;
-    height: 43px;
-    margin: 0 20px;
+  .button {
     border-radius: 50px;
     font-size: 20px;
     line-height: 1.2;
@@ -291,29 +409,80 @@ export default {
     outline: none;
   }
 
-  button:hover {
+  .button:hover {
     color: var(--bgColor);
     background-color: #fff;
     /* border: 2px solid #fff; */
   }
 
-  button:disabled {
+  .button:disabled {
     color: rgba(255, 255, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.3);
   }
 
+  .button--add {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 50px;
+    border: none;
+    width: 120px;
+    color: #96979A;
+  }
+
+  .button--add::before {
+    content: '+';
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  .button--add:hover {
+    color: #fff;
+    background-color: transparent;
+  }
+
+  .button--add:disabled {
+    border: none;
+  }
+
+  .button--add:disabled:hover {
+    color: #96979A;
+  }
+
+  .button--score {
+    width: 140px;
+    height: 43px;
+    /* margin: 0 20px; */
+  }
+
+  .button--close {
+    /* position: absolute;
+    right: 10px;
+    top: 10px; */
+    display: block;
+    width: 140px;
+    height: 75px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #353e55;
+  }
+
+  .button--close:hover {
+    border: 2px solid var(--bgColor);
+  }
 
 
-
+  /* animations */
   .slide-fade-enter-active {
     transition: all .3s ease;
   }
   .slide-fade-leave-active {
     transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
   }
-  .slide-fade-enter, .slide-fade-leave-to
-  /* .slide-fade-leave-active до версии 2.1.8 */ {
-    transform: translateX(10px);
+  .slide-fade-enter, .slide-fade-leave-to {
+    /* transform: translateX(10px); */
+    transform: translateX(50px);
     opacity: 0;
   }
 
@@ -322,7 +491,7 @@ export default {
   .list-enter-active, .list-leave-active {
     transition: all 1s;
   }
-  .list-enter, .list-leave-to /* .list-leave-active до версии 2.1.8 */ {
+  .list-enter, .list-leave-to {
     opacity: 0;
     transform: translateY(30px);
   }
